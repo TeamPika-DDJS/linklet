@@ -80,6 +80,8 @@ module.exports = {
     hot: true,
     // livereload: enable live reload on browswer
     liveReload: true,
+    // allows for react router direct endpoint access
+    historyApiFallback: true
   },
 
   performance: {
