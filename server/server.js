@@ -1,6 +1,6 @@
 const express = require('express');
-const path = require('path')
-const dotenv = require('dotenv')
+const path = require('path');
+const dotenv = require('dotenv');
 const app = express();
 dotenv.config();
 
@@ -16,6 +16,6 @@ if (MODE === 'production') {
 }
 
 app.listen(PORT, () => {
-    console.log(`Express server listening on port ${PORT}...`);
-    console.log(`Currently in ${MODE.toLowerCase()} mode`)
-})
+  console.log(`Express server listening on port ${PORT}...`);
+  console.log(`Currently in ${MODE.toLowerCase()} mode`);
+});
