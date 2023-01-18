@@ -7,6 +7,9 @@ dotenv.config();
 const MODE = process.env.NODE_ENV || 'production';
 const PORT = process.env.port || 3000;
 
+const userController = require('./controllers/userController');
+const linkController = require('./controllers/linkController');
+
 app.use(express.json());
 
 if (MODE === 'production') {
@@ -19,7 +22,7 @@ if (MODE === 'production') {
 *********************/
 
 // route to create user - sign up
-app.post('/api/users', () => {});
+app.post('/api/users', userController.createUser, () => {});
 
 // route to log user in
 app.post('api/users/login', () => {});
@@ -32,10 +35,18 @@ app.post('api/users/logout', () => {});
 *********************/
 
 // route to create new list
-app.post('/api/users/:id/lists', () => {});
+app.post(
+  '/api/users/:id/lists',
+  userController.createList,
+  (req, res, next) => {
+    res.status(200);
+  }
+);
 
 // route to read all lists
-app.get('/api/users/:id/lists', () => {});
+app.get('/api/users/:id/lists', userController.readLists, (req, res) => {
+  return res.status(200).json(res.locals.lists);
+});
 
 // route to update list
 app.patch('/api/users/:id/lists', () => {});
@@ -47,7 +58,23 @@ app.delete('/api/users/:id/lists', () => {});
     Link Routes
 *********************/
 
-// route to create new link - find or create by
+// get all links for the particular list
+app.get(
+  '/api/lists/:list_id/links',
+  linkController.readLinks,
+  (req, res, next) => {
+    res.status(200).json(res.locals.links);
+  }
+);
+
+// add link to the list
+app.post(
+  'api/lists/:list_id/links',
+  linkController.addLinkToList,
+  (req, res, next) => {
+    res.status(200);
+  }
+);
 
 app.listen(PORT, () => {
   console.log(`Express server listening on port ${PORT}...`);

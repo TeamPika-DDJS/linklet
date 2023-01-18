@@ -1,6 +1,5 @@
 const db = require('../models/database');
 const bcrypt = require('bcrypt');
-const { requestToBodyStream } = require('next/dist/server/body-streams');
 
 const userController = {};
 
@@ -48,10 +47,13 @@ userController.createUser = async (req, res, next) => {
 };
 
 userController.createList = async (req, res, next) => {
-  // we will get user id from the session, for now it's just hard coded id
   // name for the list will come from req.body
-  // values for creating a list: user id, name of the list
-  const values = [3, 'Python resources'];
+  // user id is in the params
+  const { name } = req.body;
+  const user_id = req.params['id'];
+
+  const values = [user_id, name];
+
   // error object
   const err = {
     log: 'Express error handler caught error in userController.createList middleware',
@@ -82,55 +84,25 @@ userController.createList = async (req, res, next) => {
   }
 };
 
-// helper function for retreiving id for the link
-const getLinkId = async (url) => {
-  const params = [url];
+userController.readLists = async (req, res, next) => {
+  const user_id = req.params['id'];
+  const params = [user_id];
 
-  // look for link in the table - if it exists, return id
   try {
-    const query = `SELECT * FROM links WHERE url = $1`;
+    // get lists for this user
+    const query = `SELECT id, name FROM lists WHERE user_id = $1`;
     const response = await db.query(query, params);
-    if (response.rows.length > 0) {
-      return response.rows[0].id;
-    }
+    const userLists = response.rows;
+
+    // get lists for other users
+    const otherQuery = `SELECT TOP 5 FROM lists WHERE user_id != $1`;
+    const otherResponse = await db.query(otherQuery, params);
+    const otherLists = otherResponse.rows;
+
+    // save it on locals
+    res.locals.lists = { userLists, otherLists };
+    return next();
   } catch (e) {
-    return -1;
-  }
-
-  // if link does not exist, we need to insert it first and then return id
-  try {
-    const query = `INSERT INTO links (url) VALUES ($1) RETURNING id`;
-    const response = await db.query(query, params);
-    return response.rows[0].id;
-  } catch (e) {
-    return -1;
-  }
-};
-
-userController.addLinkToList = async (req, res, next) => {
-  // id of the list to add link to and link's url are going to be stored on req.body
-  const { list_id, url } = req.body;
-
-  // error object
-  const err = {
-    log: 'Express error handler caught error in userController.addLink middleware',
-    status: 400,
-    message: { err: 'Link cannot be added to the list' }
-  };
-
-  // use helper function to get link's id
-  const link_id = await getLinkId(url);
-
-  // if we got link_id
-  if (link_id > -1) {
-    try {
-      const query = `INSERT INTO links_per_lists (link_id, list_id) VALUES ($1, $2)`;
-      const params = [link_id, list_id];
-      db.query(query, params).then((response) => console.log('success'));
-    } catch (e) {
-      return next(err);
-    }
-  } else {
     return next(err);
   }
 };

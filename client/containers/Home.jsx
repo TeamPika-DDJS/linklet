@@ -16,9 +16,20 @@ const Home = ({ users }) => {
   // {userLists:  [{'id':'listid', 'name':'listname'}],
   //  otherLists: [{'id':'listid', 'name':'listname'}]}
   useEffect(() => {
-    fetch(`/api/users/1/lists`)
-      .then((res) => res.json())
-      .then((data) => setLists(data));
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/users/3/lists`);
+        console.log(response);
+        if (response.ok) {
+          const data = response.json();
+          console.log(data);
+          setLists(data);
+        }
+      } catch (err) {
+        console.log('Network error');
+      }
+    };
+    fetchData();
   }, []);
 
   // get a link array associated with listId from backend
@@ -50,7 +61,12 @@ const Home = ({ users }) => {
       <div className="url-display">
         <h3>URLs</h3>
         {listId >= 0 ? (
-          <URLContainer className="url-container" links={links} userName = {userName.current} listName={listName.current} />
+          <URLContainer
+            className="url-container"
+            links={links}
+            userName={userName.current}
+            listName={listName.current}
+          />
         ) : null}
       </div>
     </div>
