@@ -1,18 +1,32 @@
-
 .home-display {
   display: flex;
-  background-color: green;
   padding: 10px;
   justify-content: space-around;
-  height: 95vh;
+  height: 80vh;
 }
 
 .list-display {
   width: 45%;
-  background-color: lightgreen;
+  border: 2px solid black;
+  color: #8664c2;
+  padding: 10px;
+  box-shadow: 15px 15px 4px 2px rgba(0, 0, 255, 0.2);
 }
 
 .url-display {
   width: 45%;
-  background-color: lightblue;
+  border: 2px solid black;
+  box-shadow: 15px 15px 4px 2px rgba(0, 255, 0, 0.2);
+  color: #64c274;
+  padding: 10px;
+}
+
+.list-card {
+  padding: 5px;
+  background-color: rgba(0, 0, 255, 0.2);
+  width: 200px;
+}
+
+.URL-component {
+  padding: 5px;
 }
