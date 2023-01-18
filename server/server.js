@@ -60,8 +60,8 @@ app.post(
 );
 
 // route to read all lists
-app.get('/api/users/:id/lists', userController.readLists, (req, res, next) => {
-  res.status(200).json(res.locals.lists);
+app.get('/api/users/:id/lists', userController.readLists, (req, res) => {
+  return res.status(200).json(res.locals.lists);
 });
 
 // route to update list

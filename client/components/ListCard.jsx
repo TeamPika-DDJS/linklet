@@ -4,13 +4,11 @@ import { Card } from '@mui/material';
 
 const ListCard = ({ listId, listName, setListId }) => {
   const navigate = useNavigate();
-
   return (
     <Card>
       <div
         className="list-card"
         onClick={() => {
-          console.log('hi', listId);
           setListId(listId);
         }}
       >
