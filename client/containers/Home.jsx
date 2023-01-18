@@ -6,9 +6,9 @@ import '../styles/HomeStyles.css';
 const Home = ({ users }) => {
   const [listId, setListId] = useState(-1);
   const [lists, setLists] = useState({});
-  const [links, setLinks] = useState([]);
-  const listName = useRef('default');
-  const urlList = useRef(['http://google.com', 'http://www.yahoo.com']);
+  const [links, setLinks] = useState(['https://developer.mozilla.org/en-US/', 'https://www.codesmith.io', 'https://w3schools.com']);
+  const listName = useRef('Favorite Javascript Resources');
+  const urlList = useRef(['https://mdn.com', 'https://www.codesmith.io', 'https://w3schools.com']);
   const userName = useRef('Jo');
 
   // get lists from backend
@@ -19,14 +19,13 @@ const Home = ({ users }) => {
     const fetchLists = async () => {
       try {
         const response = await fetch(`/api/users/3/lists`);
-        console.log(response);
         if (response.ok) {
           const data = await response.json();
           console.log(data);
           setLists(data);
         }
       } catch (err) {
-        console.log('Network error');
+        console.log('Network error trying to fetch lists');
       }
     };
     fetchLists();
@@ -38,10 +37,18 @@ const Home = ({ users }) => {
 
   useEffect(() => {
     const fetchLinks = async () => {
-    fetch(`/api/lists/1/links`)
-      .then((res) => res.json())
-      .then((data) => setLinks(data))
-    }
+      try {
+        const response = fetch(`/api/lists/1/links`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setLinks(data);
+        }
+      } catch (err) {
+        console.log('Network error trying to fetch links');
+      }
+    };
+    fetchLinks();
   }, [listId]);
 
   // const userLists = Object.values(users).map((userName, i) => (
