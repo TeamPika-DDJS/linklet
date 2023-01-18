@@ -1,5 +1,6 @@
 const db = require('../models/database');
 const bcrypt = require('bcrypt');
+const { requestToBodyStream } = require('next/dist/server/body-streams');
 
 const userController = {};
 
@@ -29,10 +30,10 @@ userController.createUser = async (req, res, next) => {
     const rows = response.rows;
     // if rows have length, that means there is already this email stored in the database
     if (rows.length > 0) {
-      next(err);
+      return next(err);
     }
   } catch (e) {
-    next(err);
+    return next(err);
   }
 
   // if email is free, we can try to create a user now
@@ -40,9 +41,9 @@ userController.createUser = async (req, res, next) => {
     const query = `INSERT INTO users (email, username, password) VALUES ($1, $2, $3)`;
     values.push(username, encryptedPassword);
     await db.query(query, values);
-    next();
+    return next();
   } catch (e) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -65,20 +66,72 @@ userController.createList = async (req, res, next) => {
     const rows = response.rows;
     // if rows have length, that means there is already this user already has this list
     if (rows.length > 0) {
-      // next(err);
-      console.log('list exists');
+      return next(err);
     }
   } catch (e) {
-    // next(err);
+    return next(err);
   }
 
   // now we can add new list
   try {
     const query = `INSERT INTO lists (user_id, name) VALUES ($1, $2)`;
     await db.query(query, values);
-    // next();
+    return next();
   } catch (e) {
-    // next(err);
+    return next(err);
+  }
+};
+
+// helper function for retreiving id for the link
+const getLinkId = async (url) => {
+  const params = [url];
+
+  // look for link in the table - if it exists, return id
+  try {
+    const query = `SELECT * FROM links WHERE url = $1`;
+    const response = await db.query(query, params);
+    if (response.rows.length > 0) {
+      return response.rows[0].id;
+    }
+  } catch (e) {
+    return -1;
+  }
+
+  // if link does not exist, we need to insert it first and then return id
+  try {
+    const query = `INSERT INTO links (url) VALUES ($1) RETURNING id`;
+    const response = await db.query(query, params);
+    return response.rows[0].id;
+  } catch (e) {
+    return -1;
+  }
+};
+
+userController.addLinkToList = async (req, res, next) => {
+  // id of the list to add link to and link's url are going to be stored on req.body
+  const { list_id, url } = req.body;
+
+  // error object
+  const err = {
+    log: 'Express error handler caught error in userController.addLink middleware',
+    status: 400,
+    message: { err: 'Link cannot be added to the list' }
+  };
+
+  // use helper function to get link's id
+  const link_id = await getLinkId(url);
+
+  // if we got link_id
+  if (link_id > -1) {
+    try {
+      const query = `INSERT INTO links_per_lists (link_id, list_id) VALUES ($1, $2)`;
+      const params = [link_id, list_id];
+      db.query(query, params).then((response) => console.log('success'));
+    } catch (e) {
+      return next(err);
+    }
+  } else {
+    return next(err);
   }
 };
 
