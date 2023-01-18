@@ -7,6 +7,8 @@ dotenv.config();
 const MODE = process.env.NODE_ENV || 'production';
 const PORT = process.env.port || 3000;
 
+const userController = require('./controllers/userController');
+
 app.use(express.json());
 
 if (MODE === 'production') {
@@ -36,7 +38,9 @@ app.post('api/users/logout', () => {});
 app.post('/api/users/:id/lists', () => {});
 
 // route to read all lists
-app.get('/api/users/:id/lists', () => {});
+app.get('/api/users/:id/lists', userController.readLists, (req, res, next) => {
+  res.status(200).json(res.locals.lists);
+});
 
 // route to update list
 app.patch('/api/users/:id/lists', () => {});
@@ -48,7 +52,17 @@ app.delete('/api/users/:id/lists', () => {});
     Link Routes
 *********************/
 
-// route to create new link - find or create by
+// get all links for the particular list
+app.get(
+  '/api/lists/:list_id/links',
+  userController.readLinks,
+  (req, res, next) => {
+    res.status(200).json(res.locals.links);
+  }
+);
+
+// add link to the list
+app.post('api/lists/:list_id/links', () => {});
 
 app.listen(PORT, () => {
   console.log(`Express server listening on port ${PORT}...`);
