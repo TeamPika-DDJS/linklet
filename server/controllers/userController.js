@@ -50,8 +50,7 @@ userController.createList = async (req, res, next) => {
   // we will get user id from the session, for now it's just hard coded id
   // name for the list will come from req.body
   // values for creating a list: user id, name of the list
-  const values = [3, 'JavaScript resources'];
-
+  const values = [3, 'Python resources'];
   // error object
   const err = {
     log: 'Express error handler caught error in userController.createList middleware',
@@ -66,21 +65,23 @@ userController.createList = async (req, res, next) => {
     const rows = response.rows;
     // if rows have length, that means there is already this user already has this list
     if (rows.length > 0) {
-      next(err);
+      // next(err);
+      console.log('list exists');
     }
   } catch (e) {
-    next(err);
+    // next(err);
   }
 
   // now we can add new list
   try {
     const query = `INSERT INTO lists (user_id, name) VALUES ($1, $2)`;
-    const response = await db.query(query, values);
-    console.log(response);
-    next();
+    await db.query(query, values);
+    // next();
   } catch (e) {
-    next(err);
+    // next(err);
   }
 };
+
+userController.createList();
 
 module.exports = userController;
