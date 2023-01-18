@@ -114,14 +114,20 @@ userController.readLists = async (req, res, next) => {
   const user_id = req.params['id'];
   const params = [user_id];
 
+  const err = {
+    log: 'Express error handler caught error in userController.readLists middleware',
+    status: 400,
+    message: { err: 'User already has this list' }
+  };
+
   try {
     // get lists for this user
-    const query = `SELECT id, name FROM lists WHERE user_id = $1`;
+    const query = `SELECT * FROM lists WHERE user_id = $1`;
     const response = await db.query(query, params);
     const userLists = response.rows;
 
     // get lists for other users
-    const otherQuery = `SELECT TOP 5 FROM lists WHERE user_id != $1`;
+    const otherQuery = `SELECT * FROM lists WHERE user_id != $1 LIMIT 5`;
     const otherResponse = await db.query(otherQuery, params);
     const otherLists = otherResponse.rows;
 
