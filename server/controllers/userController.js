@@ -48,10 +48,13 @@ userController.createUser = async (req, res, next) => {
 };
 
 userController.createList = async (req, res, next) => {
-  // we will get user id from the session, for now it's just hard coded id
   // name for the list will come from req.body
-  // values for creating a list: user id, name of the list
-  const values = [3, 'Python resources'];
+  // user id is in the params
+  const { name } = req.body;
+  const user_id = req.params['id'];
+
+  const values = [user_id, name];
+
   // error object
   const err = {
     log: 'Express error handler caught error in userController.createList middleware',
@@ -109,7 +112,8 @@ const getLinkId = async (url) => {
 
 userController.addLinkToList = async (req, res, next) => {
   // id of the list to add link to and link's url are going to be stored on req.body
-  const { list_id, url } = req.body;
+  const { url } = req.body;
+  const list_id = req.params['list_id'];
 
   // error object
   const err = {
@@ -126,11 +130,58 @@ userController.addLinkToList = async (req, res, next) => {
     try {
       const query = `INSERT INTO links_per_lists (link_id, list_id) VALUES ($1, $2)`;
       const params = [link_id, list_id];
-      db.query(query, params).then((response) => console.log('success'));
+      await db.query(query, params);
+      return next();
     } catch (e) {
       return next(err);
     }
   } else {
+    return next(err);
+  }
+};
+
+userController.readLists = async (req, res, next) => {
+  const user_id = req.params['id'];
+  const params = [user_id];
+
+  try {
+    // get lists for this user
+    const query = `SELECT id, name FROM lists WHERE user_id = $1`;
+    const response = await db.query(query, params);
+    const userLists = response.rows;
+
+    // get lists for other users
+    const otherQuery = `SELECT TOP 5 FROM lists WHERE user_id != $1`;
+    const otherResponse = await db.query(otherQuery, params);
+    const otherLists = otherResponse.rows;
+
+    // save it on locals
+    res.locals.lists = { userLists, otherLists };
+    return next();
+  } catch (e) {
+    return next(err);
+  }
+};
+
+userController.readLinks = async (req, res, next) => {
+  const list_id = req.params['list_id'];
+
+  // error object
+  const err = {
+    log: 'Express error handler caught error in userController.addLink middleware',
+    status: 400,
+    message: { err: 'Could not find links for this list' }
+  };
+
+  // we will get all links for this particular list
+  // we will return an array of objects with 2 keys: id, url
+  const params = [list_id];
+  const query = `SELECT * FROM links WHERE id IN (SELECT link_id FROM links_per_lists WHERE list_id = $1)`;
+  try {
+    const response = await db.query(query, params);
+    res.locals.links = response.rows;
+    return next();
+  } catch (er) {
     return next(err);
   }
 };
