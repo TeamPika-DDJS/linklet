@@ -22,7 +22,6 @@ if (MODE === 'production') {
 app.post('/api/users', () => {});
 
 // route to log user in
-
 app.post('api/users/login', () => {});
 
 // route to log user out

@@ -10,7 +10,6 @@ const ListCard = ({ listId, listName, setListId }) => {
       <div
         className="list-card"
         onClick={() => {
-          console.log('hi', listId);
           setListId(listId);
         }}
       >

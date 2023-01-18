@@ -6,15 +6,11 @@ import '../styles/HomeStyles.css';
 const Home = ({ users }) => {
   const [listId, setListId] = useState(-1);
   const listName = useRef('default');
-  const list = useRef(['http://google.com', 'http://www.yahoo.com']);
+  const urlList = useRef(['http://google.com', 'http://www.yahoo.com']);
   const userName = useRef('Jo');
   // query backend for listName and list based on listId
   useEffect(() => {
-    console.log('list change')
-    // fetch backend
-    // listName.current = '';
-    // list.current = [];
-    // userName.current = '';
+    console.log(`list change to id ${listId}`);
   }, [listId]);
 
   // const userLists = Object.values(users).map((userName, i) => (
@@ -36,7 +32,7 @@ const Home = ({ users }) => {
             className="url-container"
             userName={userName.current}
             listName={listName.current}
-            list={list.current}
+            urlList={urlList.current}
           />
         ) : null}
       </div>
