@@ -1,0 +1,18 @@
+
+.home-display {
+  display: flex;
+  background-color: green;
+  padding: 10px;
+  justify-content: space-around;
+  height: 95vh;
+}
+
+.list-display {
+  width: 45%;
+  background-color: lightgreen;
+}
+
+.url-display {
+  width: 45%;
+  background-color: lightblue;
+}

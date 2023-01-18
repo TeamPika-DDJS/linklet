@@ -43,7 +43,9 @@ app.post('/api/users/logout', (req, res) => {});
 app.post('/api/users/:id/lists', (req, res) => {});
 
 // route to read all lists
-app.get('/api/users/:id/lists', (req, res) => {});
+app.get('/api/users/:id/lists', userController.readLists, (req, res, next) => {
+  res.status(200).json(res.locals.lists);
+});
 
 // route to update list
 app.patch('/api/users/:id/lists', (req, res) => {});
@@ -55,7 +57,17 @@ app.delete('/api/users/:id/lists', (req, res) => {});
     Link Routes
 *********************/
 
-// route to create new link - find or create by
+// get all links for the particular list
+app.get(
+  '/api/lists/:list_id/links',
+  userController.readLinks,
+  (req, res, next) => {
+    res.status(200).json(res.locals.links);
+  }
+);
+
+// add link to the list
+app.post('api/lists/:list_id/links', () => {});
 
 // catch all route
 app.use('*', (req, res) => {

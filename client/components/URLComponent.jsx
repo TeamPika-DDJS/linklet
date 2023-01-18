@@ -1,11 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const URLComponent = () => {
+const URLComponent = ({ url }) => {
     return (
         <div>
-            <Link to="/banana">Hi</Link>
-            <h3>My Link</h3>
+            <a href={url}>Hi</a>
         </div>
     )
 }
