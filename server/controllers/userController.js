@@ -41,6 +41,7 @@ userController.createUser = async (req, res, next) => {
     values.push(username, encryptedPassword);
     const response = await db.query(query, values);
     res.locals.user = response.rows[0];
+    req.session.user = res.locals.user;
     return next();
   } catch (e) {
     return next(err);
@@ -61,7 +62,10 @@ userController.verifyUser = async (req, res, next) => {
     const response = await db.query(query);
     const user = response.rows[0];
     const match = await bcrypt.compare(password, user.password);
-    if (match) res.locals.user = { id: user.id, username: user.username };
+    if (match) {
+      res.locals.user = { id: user.id, username: user.username };
+      req.session.user = res.locals.user;
+    }
     return next();
   } catch (error) {
     next(err);

@@ -17,6 +17,16 @@ if (MODE === 'production') {
   app.use('/', express.static(path.resolve(__dirname, '../dist')));
 }
 
+app.use(cookieParser());
+
+app.use(
+  sessions({
+    secret: 'pikachu01182023',
+    resave: false,
+    saveUninitialized: true
+  })
+);
+
 /*********************
     User Routes
 *********************/
