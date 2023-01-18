@@ -3,9 +3,9 @@ import URLComponent from '../components/URLComponent';
 import { Card } from '@mui/material';
 
 // username comes from App
-const URLContainer = ({ userName, listName, urlList }) => {
+const URLContainer = ({ userName, listName, links }) => {
 
-  const URLs = urlList.map((url, i) => (
+  const URLs = links.map((url, i) => (
     <URLComponent key={i} url={url} />
   ));
 

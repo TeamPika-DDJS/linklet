@@ -4,7 +4,6 @@ import { Card } from '@mui/material';
 
 const ListCard = ({ listId, listName, setListId }) => {
   const navigate = useNavigate();
-
   return (
     <Card>
       <div
