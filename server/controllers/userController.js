@@ -37,12 +37,38 @@ userController.createUser = async (req, res, next) => {
 
   // if email is free, we can try to create a user now
   try {
-    const query = `INSERT INTO users (email, username, password) VALUES ($1, $2, $3)`;
+    const query = `INSERT INTO users (email, username, password) VALUES ($1, $2, $3) RETURNING id, username`;
     values.push(username, encryptedPassword);
-    await db.query(query, values);
+    const response = await db.query(query, values);
+    res.locals.user = response.rows[0];
+    req.session.user = res.locals.user;
     return next();
   } catch (e) {
     return next(err);
+  }
+};
+
+userController.verifyUser = async (req, res, next) => {
+  const { username, password } = req.body;
+
+  const err = {
+    log: 'Express error handler caught error in userController.verifyUser middleware',
+    status: 400,
+    message: { err: 'User cannot be created' }
+  };
+
+  try {
+    const query = `SELECT * FROM users WHERE username='${username}'`;
+    const response = await db.query(query);
+    const user = response.rows[0];
+    const match = await bcrypt.compare(password, user.password);
+    if (match) {
+      res.locals.user = { id: user.id, username: user.username };
+      req.session.user = res.locals.user;
+    }
+    return next();
+  } catch (error) {
+    next(err);
   }
 };
 
