@@ -18,10 +18,10 @@ const Home = ({ users }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/users/3/lists`);
+        const response = await fetch(`/api/users/3/lists`);
         console.log(response);
         if (response.ok) {
-          const data = response.json();
+          const data = await response.json();
           console.log(data);
           setLists(data);
         }
