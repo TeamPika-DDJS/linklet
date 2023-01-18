@@ -37,12 +37,38 @@ userController.createUser = async (req, res, next) => {
 
   // if email is free, we can try to create a user now
   try {
-    const query = `INSERT INTO users (email, username, password) VALUES ($1, $2, $3)`;
+    const query = `INSERT INTO users (email, username, password) VALUES ($1, $2, $3) RETURNING id, username`;
     values.push(username, encryptedPassword);
-    await db.query(query, values);
+    const response = await db.query(query, values);
+    res.locals.user = response.rows[0];
+    req.session.user = res.locals.user;
     return next();
   } catch (e) {
     return next(err);
+  }
+};
+
+userController.verifyUser = async (req, res, next) => {
+  const { username, password } = req.body;
+
+  const err = {
+    log: 'Express error handler caught error in userController.verifyUser middleware',
+    status: 400,
+    message: { err: 'User cannot be created' }
+  };
+
+  try {
+    const query = `SELECT * FROM users WHERE username='${username}'`;
+    const response = await db.query(query);
+    const user = response.rows[0];
+    const match = await bcrypt.compare(password, user.password);
+    if (match) {
+      res.locals.user = { id: user.id, username: user.username };
+      req.session.user = res.locals.user;
+    }
+    return next();
+  } catch (error) {
+    next(err);
   }
 };
 
@@ -88,14 +114,20 @@ userController.readLists = async (req, res, next) => {
   const user_id = req.params['id'];
   const params = [user_id];
 
+  const err = {
+    log: 'Express error handler caught error in userController.readLists middleware',
+    status: 400,
+    message: { err: 'User already has this list' }
+  };
+
   try {
     // get lists for this user
-    const query = `SELECT id, name FROM lists WHERE user_id = $1`;
+    const query = `SELECT * FROM lists WHERE user_id = $1`;
     const response = await db.query(query, params);
     const userLists = response.rows;
 
     // get lists for other users
-    const otherQuery = `SELECT TOP 5 FROM lists WHERE user_id != $1`;
+    const otherQuery = `SELECT * FROM lists WHERE user_id != $1 LIMIT 5`;
     const otherResponse = await db.query(otherQuery, params);
     const otherLists = otherResponse.rows;
 
