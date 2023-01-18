@@ -16,7 +16,7 @@ const Home = ({ users }) => {
   // {userLists:  [{'id':'listid', 'name':'listname'}],
   //  otherLists: [{'id':'listid', 'name':'listname'}]}
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchLists = async () => {
       try {
         const response = await fetch(`/api/users/3/lists`);
         console.log(response);
@@ -29,7 +29,7 @@ const Home = ({ users }) => {
         console.log('Network error');
       }
     };
-    fetchData();
+    fetchLists();
   }, []);
 
   // get a link array associated with listId from backend
@@ -37,10 +37,11 @@ const Home = ({ users }) => {
   // ['link1', 'link2', 'link3', 'link4']
 
   useEffect(() => {
-    console.log('links updated', listId);
+    const fetchLinks = async () => {
     fetch(`/api/lists/1/links`)
       .then((res) => res.json())
-      .then((data) => setLinks(data));
+      .then((data) => setLinks(data))
+    }
   }, [listId]);
 
   // const userLists = Object.values(users).map((userName, i) => (
