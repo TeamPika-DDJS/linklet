@@ -65,21 +65,31 @@ userController.createList = async (req, res, next) => {
     const rows = response.rows;
     // if rows have length, that means there is already this user already has this list
     if (rows.length > 0) {
-      // next(err);
+      next(err);
       console.log('list exists');
     }
   } catch (e) {
-    // next(err);
+    next(err);
   }
 
   // now we can add new list
   try {
     const query = `INSERT INTO lists (user_id, name) VALUES ($1, $2)`;
     await db.query(query, values);
-    // next();
+    next();
   } catch (e) {
-    // next(err);
+    next(err);
   }
+};
+
+userController.addLink = async (req, res, next) => {
+  // we will get user id from the session, for now its hard coded
+  const user_id = 1;
+
+  // name of the list to add link to and link's url are going to be stored on req.body
+  const [list, url] = req.body;
+
+  // first we need to check if this url already exist in the data base so we don't have repetetive entries
 };
 
 module.exports = userController;
