@@ -26,7 +26,7 @@ const App = () => {
                 <Route
                 exact 
                 path="/"
-                element={<Home />}
+                element={<Home users={users}/>}
                 />
                 {routes}
             </Routes>
