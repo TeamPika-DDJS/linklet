@@ -82,6 +82,4 @@ userController.createList = async (req, res, next) => {
   }
 };
 
-userController.createList();
-
 module.exports = userController;
