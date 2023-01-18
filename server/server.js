@@ -5,10 +5,11 @@ const path = require('path');
 const dotenv = require('dotenv');
 const app = express();
 
-const userController = require('./controllers/userController');
-
 const MODE = process.env.NODE_ENV || 'production';
 const PORT = process.env.port || 3000;
+
+const userController = require('./controllers/userController');
+const linkController = require('./controllers/linkController');
 
 app.use(express.json());
 
@@ -50,7 +51,13 @@ app.post('/api/users/logout', (req, res) => {});
 *********************/
 
 // route to create new list
-app.post('/api/users/:id/lists', (req, res) => {});
+app.post(
+  '/api/users/:id/lists',
+  userController.createList,
+  (req, res, next) => {
+    res.status(200);
+  }
+);
 
 // route to read all lists
 app.get('/api/users/:id/lists', userController.readLists, (req, res, next) => {
@@ -70,14 +77,20 @@ app.delete('/api/users/:id/lists', (req, res) => {});
 // get all links for the particular list
 app.get(
   '/api/lists/:list_id/links',
-  userController.readLinks,
+  linkController.readLinks,
   (req, res, next) => {
     res.status(200).json(res.locals.links);
   }
 );
 
 // add link to the list
-app.post('api/lists/:list_id/links', () => {});
+app.post(
+  'api/lists/:list_id/links',
+  linkController.addLinkToList,
+  (req, res, next) => {
+    res.status(200);
+  }
+);
 
 // catch all route
 app.use('*', (req, res) => {
