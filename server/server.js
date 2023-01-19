@@ -75,7 +75,6 @@ app.delete('/api/users/:id/lists', (req, res) => {});
 
 // get all links for the particular list
 app.get('/api/lists/:list_id/links', linkController.readLinks, (req, res) => {
-  console.log(res.locals.links);
   return res.status(200).json(res.locals.links);
 });
 
