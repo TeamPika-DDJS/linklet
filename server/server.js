@@ -38,7 +38,6 @@ app.post('/api/users', userController.createUser, (req, res) => {
 });
 
 // route to log user in
-
 app.post('/api/users/login', userController.verifyUser, (req, res) => {
   return res.json(res.locals.user);
 });
@@ -75,13 +74,10 @@ app.delete('/api/users/:id/lists', (req, res) => {});
 *********************/
 
 // get all links for the particular list
-app.get(
-  '/api/lists/:list_id/links',
-  linkController.readLinks,
-  (req, res, next) => {
-    res.status(200).json(res.locals.links);
-  }
-);
+app.get('/api/lists/:list_id/links', linkController.readLinks, (req, res) => {
+  console.log(res.locals.links);
+  return res.status(200).json(res.locals.links);
+});
 
 // add link to the list
 app.post(

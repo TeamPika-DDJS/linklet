@@ -4,14 +4,13 @@ import { Card } from '@mui/material';
 
 // username comes from App
 const URLContainer = ({ userName, listName, links }) => {
-
-  const URLs = links.map((url, i) => (
-    <URLComponent key={i} url={url} />
-  ));
+  const URLs = links.map((url, i) => <URLComponent key={i} url={url} />);
 
   return (
     <Card>
-      <h3>This {userName}'s list: {listName}</h3>
+      <h3>
+        This {userName}'s list: {listName}
+      </h3>
       {URLs}
     </Card>
   );
