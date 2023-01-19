@@ -6,9 +6,8 @@ import '../styles/HomeStyles.css';
 const Home = ({ users }) => {
   const [listId, setListId] = useState(-1);
   const [lists, setLists] = useState({});
-  const [links, setLinks] = useState(['https://developer.mozilla.org/en-US/', 'https://www.codesmith.io', 'https://w3schools.com']);
+  const [links, setLinks] = useState([]);
   const listName = useRef('Favorite Javascript Resources');
-  const urlList = useRef(['https://mdn.com', 'https://www.codesmith.io', 'https://w3schools.com']);
   const userName = useRef('Jo');
 
   // get lists from backend
@@ -21,7 +20,6 @@ const Home = ({ users }) => {
         const response = await fetch(`/api/users/3/lists`);
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           setLists(data);
         }
       } catch (err) {
@@ -34,14 +32,13 @@ const Home = ({ users }) => {
   // get a link array associated with listId from backend
   // returns:
   // ['link1', 'link2', 'link3', 'link4']
-
   useEffect(() => {
+    if (listId === -1) return;
     const fetchLinks = async () => {
       try {
-        const response = fetch(`/api/lists/1/links`);
+        const response = await fetch(`/api/lists/${listId}/links`);
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           setLinks(data);
         }
       } catch (err) {
@@ -51,9 +48,6 @@ const Home = ({ users }) => {
     fetchLinks();
   }, [listId]);
 
-  // const userLists = Object.values(users).map((userName, i) => (
-  //   <ListContainer key={i} userName={userName} />
-  // ));
   return (
     <div className="home-display">
       <div className="list-display">
